@@ -1,0 +1,110 @@
+version: 2
+jobs:
+  test_lambda:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-securityhub
+    steps:
+      - checkout
+      - run:
+          name: Run Tests
+          command: |
+            pwd && make test_lambda
+  release_lambda:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-securityhub
+    steps:
+      - checkout
+      - run:
+          name: Build executable
+          command: |
+            pwd && make release_lambda
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./release/*
+  plan_terraform:
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install make
+          command: apk add --update make
+      - run:
+          name: Install python3
+          command: apk add --update python3
+      - run:
+          name: Install terrascan
+          command: pip3 install --upgrade terrascan
+      - run:
+          name: Validate terraform
+          command: pwd && make plan_terraform
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./terraform/.terraform/*
+  apply_terraform:
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install make
+          command: apk add --update make
+      - run:
+          name: Install python3
+          command: apk add --update python3
+      - run:
+          name: Install terrascan
+          command: pip3 install --upgrade terrascan
+      - run:
+          name: Deploy Lambda
+          command: pwd && make apply_terraform
+  release_integration:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-securityhub
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build executable
+          command: |
+            pwd && make release_integration
+      - store_artifacts:
+          path: ./release
+
+workflows:
+  version: 2
+  test_and_apply:
+    jobs:
+      - plan_terraform
+      - test_lambda
+      - release_lambda:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - test_lambda
+      - apply_terraform:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - release_lambda
+      - release_integration:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - apply_terraform
