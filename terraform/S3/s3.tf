@@ -1,4 +1,4 @@
-#Create Bucket
+Create Bucket
 
 resource "aws_s3_bucket" "grace-logging" {
   bucket = "${var.name}"
@@ -195,8 +195,8 @@ resource "aws_s3_bucket" "grace-access-logs" {
     prefix = "${var.lifecycle_prefix}"
 
     tags {
-      "rule"      = "awslog"
-      "autoclean" = "true"
+      rule      = "awslog"
+      autoclean = "true"
     }
 
     transition {
