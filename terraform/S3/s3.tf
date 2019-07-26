@@ -1,4 +1,4 @@
-Create Bucket
+#Create Bucket
 
 resource "aws_s3_bucket" "grace-logging" {
   bucket = "${var.name}"
