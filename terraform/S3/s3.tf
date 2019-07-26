@@ -33,8 +33,8 @@ resource "aws_s3_bucket" "grace-logging" {
     prefix = "${var.lifecycle_prefix}"
 
     tags {
-      "rule"      = "awslog"
-      "autoclean" = "true"
+      rule      = "awslog"
+      autoclean = "true"
     }
 
     transition {
