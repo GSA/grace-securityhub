@@ -1,4 +1,3 @@
-variable "appenv" {}
 
 module "app" {
   source = "./app"
