@@ -26,7 +26,7 @@ jobs:
             - ./release/*
   plan_terraform:
     docker:
-      - image: hashicorp/terraform:light
+      - image: hashicorp/terraform:0.12.6
     steps:
       - checkout
       - attach_workspace:
@@ -49,7 +49,7 @@ jobs:
             - ./terraform/.terraform/*
   apply_terraform:
     docker:
-      - image: hashicorp/terraform:light
+      - image: hashicorp/terraform:0.12.6
     steps:
       - checkout
       - attach_workspace:

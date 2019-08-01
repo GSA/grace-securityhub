@@ -1,37 +1,20 @@
-GOOS = linux
-GOARCH = amd64
 GOBIN := $(GOPATH)/bin
 GODEP := $(GOBIN)/dep
-GOLANGCILINT := $(GOBIN)/golangci-lint
 GOSEC := $(GOBIN)/gosec
-GHR := $(GOBIN)/ghr
+GOLANGCILINT := $(GOBIN)/golangci-lint
 RELEASEDIR ?= ../release/
 CIRCLE_PROJECT_REPONAME ?= grace-securityhub
+APPNAME := $(CIRCLE_PROJECT_REPONAME)-lambda
 
-.PHONY: build release clean test lint dependencies
-build: test clean
+.PHONY: release clean test lint dependencies
+release: test
 	mkdir -p $(RELEASEDIR)
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME) -v
-	zip -j $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME).zip $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME)
-	rm -f $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME)
-
-release: build
-	export CIRCLE_TAG=$(CIRCLE_TAG)
-ifeq ($(strip $(GITHUB_TOKEN)),)
-	@echo "GITHUB_TOKEN must be provided"
-	@exit 0
-else ifeq ($(strip $(CIRCLE_TAG)),)
-  @echo "CIRCLE_TAG must be set"
-	@exit 0
-else ifeq ($(shell echo $(CIRCLE_TAG) | egrep '^v\d+\.\d+\.\d+'),)
-  @echo "CIRCLE_TAG must match version pattern (i.e. v.1.2.3)"
-	@exit 0
-else
-	ghr -t $(GITHUB_TOKEN) -u $(CIRCLE_PROJECT_USERNAME) -r $(CIRCLE_PROJECT_REPONAME) -c $(CIRCLE_SHA1) -delete $(CIRCLE_TAG) $(RELEASEDIR)
-endif
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(RELEASEDIR)$(APPNAME) -v
+	zip -j $(RELEASEDIR)$(APPNAME).zip $(RELEASEDIR)$(APPNAME)
+	rm -f $(RELEASEDIR)$(APPNAME)
 
 clean:
-	rm -rf $(RELEASEDIR)
+	rm -f $(RELEASEDIR)$(APPNAME).zip
 
 test: lint
 	go test -v ./...
@@ -46,7 +29,7 @@ ifeq (,$(wildcard Gopkg.toml))
 	dep init
 endif
 
-dependencies: $(GODEP) $(GOLANGCILINT) $(GOSEC) $(GHR)
+dependencies: $(GODEP) $(GOSEC) $(GOMETALINTER)
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
@@ -56,6 +39,3 @@ $(GODEP):
 
 $(GOSEC):
 	go get -u github.com/securego/gosec/cmd/gosec
-
-$(GHR):
-	go get -u github.com/tcnksm/ghr

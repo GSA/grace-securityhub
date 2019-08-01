@@ -9,6 +9,11 @@ variable "securityhub_enable_guardduty" {
   default     = "true"
 }
 
+variable "lambda_sns_topic_name" {
+  description = "(optional) The name of the SNS topic used to send events to the SecurityHub Lambda"
+  default     = "grace-securityhub-topic"
+}
+
 variable "guardduty_enable" {
   description = "(optional) The boolean value of whether to enable the GuardDuty Detector"
   default     = "true"
@@ -33,7 +38,6 @@ variable "config_recorder_enabled" {
   description = "(optional) The boolean value indicating whether or not to enable AWS Config Recorder"
   default     = "true"
 }
-
 variable "config_delivery_name" {
   description = "(optional) The name given to the AWS Config Delivery Channel"
   default     = "grace-config-service"
@@ -60,4 +64,9 @@ variable "config_recorder_group_all_supported" {
 variable "config_recorder_group_include_global" {
   description = "(optional) Specifies whether AWS Config includes all supported types of global resources with the resources that it records."
   default     = "true"
+}
+variable "lambda_source_file" {
+  type        = "string"
+  description = "(optional) full or relative path to zipped binary of lambda handler"
+  default     = "../release/grace-securityhub.zip"
 }
