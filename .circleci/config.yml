@@ -2,6 +2,7 @@ jobs:
   test_lambda:
     docker:
       - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-securityhub
     steps:
       - checkout
       - run:
