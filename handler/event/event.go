@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/securityhub"
 	"github.com/aws/aws-sdk-go/service/sts"
-	"strconv"
 )
 
 // Event ... holds raw CloudWatch event data
@@ -26,9 +27,7 @@ var types []Type
 // Register ... registers the given Type objects for use as Event matchers
 // Type objects are sequentially called, so order matters
 func Register(typ ...Type) {
-	for _, t := range typ {
-		types = append(types, t)
-	}
+	types = append(types, typ...)
 }
 
 // Processor ... is used for retaining state data for processing Event objects
@@ -39,6 +38,7 @@ type Processor struct {
 
 // New ... returns a new *Processor
 func New() (p *Processor, err error) {
+	p = &Processor{}
 	p.sess = session.Must(session.NewSession())
 	p.ident, err = p.identity()
 	return

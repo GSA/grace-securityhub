@@ -2,11 +2,12 @@ package types
 
 import (
 	"fmt"
+	"strconv"
+	"sync"
+
 	"github.com/GSA/grace-securityhub/handler/event"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/securityhub"
-	"strconv"
-	"sync"
 )
 
 // Generic ... holds state data for the Generic event.Type matcher
