@@ -63,6 +63,7 @@ var flattenExp3 = map[string]interface{}{
 	"a": "a",
 	"c": "",
 }
+
 //nolint: lll
 var flattenData4 = `{"a":"a", "b":"{\"aa\":null,\"bb\":[{\"aaa\":{\"aaaa\":\"aaaa\",\"aaab\":null},\"aab\":\"aab\"},{\"bbb\":{\"aaaa\":\"aaaa\",\"aaab\":null},\"bbc\":\"bbc\"}]}"}`
 var flattenExp4 = map[string]interface{}{
