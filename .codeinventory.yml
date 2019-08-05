@@ -1,5 +1,5 @@
-name: 'GSA/[PROJECT]'
-description: '[PROJECT DESCRIPTION]'
+name: 'GSA/securityhub'
+description: 'GRACE SecurityHub Subcomponent'
 license: cc0-1.0
 openSourceProject: 1
 governmentWideReuseProject: 1
@@ -9,4 +9,4 @@ tags:
     - grace
     - devsecops
 contact:
-    email: devsecops-core@gsa.gov
+    email: grace-staff@gsa.gov

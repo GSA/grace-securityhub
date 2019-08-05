@@ -1,4 +1,4 @@
-# Project
+# SecurityHub
 
 ## Repository contents
 
