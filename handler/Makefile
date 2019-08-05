@@ -4,7 +4,7 @@ GOSEC := $(GOBIN)/gosec
 GOLANGCILINT := $(GOBIN)/golangci-lint
 RELEASEDIR ?= ../release/
 CIRCLE_PROJECT_REPONAME ?= grace-securityhub
-APPNAME := $(CIRCLE_PROJECT_REPONAME)-lambda
+APPNAME := $(CIRCLE_PROJECT_REPONAME)
 
 .PHONY: release clean test lint dependencies
 release: test

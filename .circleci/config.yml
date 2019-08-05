@@ -1,110 +1,64 @@
-version: 2
 jobs:
   test_lambda:
     docker:
       - image: circleci/golang:latest
-    working_directory: /go/src/github.com/GSA/grace-securityhub
     steps:
       - checkout
       - run:
           name: Run Tests
           command: |
-            pwd && make test_lambda
+            pwd && make -C handler test
   release_lambda:
     docker:
       - image: circleci/golang:latest
-    working_directory: /go/src/github.com/GSA/grace-securityhub
     steps:
       - checkout
       - run:
           name: Build executable
           command: |
-            pwd && make release_lambda
+            pwd && make -C handler release
       - persist_to_workspace:
           root: .
           paths:
             - ./release/*
-  plan_terraform:
+  validate:
+    environment:
+        AWS_DEFAULT_REGION: us-east-1
     docker:
       - image: hashicorp/terraform:0.12.6
     steps:
       - checkout
-      - attach_workspace:
-          at: .
       - run:
-          name: Install make
-          command: apk add --update make
+          name: Install curl
+          command: apk add --update curl
       - run:
-          name: Install python3
-          command: apk add --update python3
+          name: create release directory if it doesn't exist
+          command: if [[! -d ../release ]]; then mkdir ../release; fi
       - run:
-          name: Install terrascan
-          command: pip3 install --upgrade terrascan
+          name: touch zip if it doesn't exist
+          command: if [[! -e ../release/grace-securityhub.zip ]]; then touch ../release/grace-securityhub.zip; fi
       - run:
-          name: Validate terraform
-          command: pwd && make plan_terraform
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./terraform/.terraform/*
-  apply_terraform:
-    docker:
-      - image: hashicorp/terraform:0.12.6
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
+          name: terraform init
+          command: find . -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && terraform init -input=false -backend=false) || exit 1; done
       - run:
-          name: Install make
-          command: apk add --update make
+          name: Validate Terraform configurations
+          command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;| sort -u | while read m; do (cd "$m" && terraform validate && echo "√ $m") || exit 1 ; done
       - run:
-          name: Install python3
-          command: apk add --update python3
+          name: Check if Terraform configurations are properly formatted
+          command: if [[ -n "$(terraform fmt -write=false)" ]]; then echo "Some terraform files need be formatted, run 'terraform fmt' to fix"; exit 1; fi
       - run:
-          name: Install terrascan
-          command: pip3 install --upgrade terrascan
+          name: Install tflint
+          command: curl -L -o /tmp/tflint.zip https://github.com/wata727/tflint/releases/download/v0.9.2/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
       - run:
-          name: Deploy Lambda
-          command: pwd && make apply_terraform
-  release_integration:
-    docker:
-      - image: circleci/golang:latest
-    working_directory: /go/src/github.com/GSA/grace-securityhub
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Build executable
-          command: |
-            pwd && make release_integration
-      - store_artifacts:
-          path: ./release
+          name: Check Terraform configurations with tflint
+          command: tflint
 
 workflows:
   version: 2
-  test_and_apply:
+  build:
     jobs:
-      - plan_terraform
+      - validate
       - test_lambda
       - release_lambda:
-          filters:
-            branches:
-              only:
-                - master
           requires:
             - test_lambda
-      - apply_terraform:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - release_lambda
-      - release_integration:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - apply_terraform

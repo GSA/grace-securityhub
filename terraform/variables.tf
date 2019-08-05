@@ -9,11 +9,6 @@ variable "securityhub_enable_guardduty" {
   default     = "true"
 }
 
-variable "lambda_sns_topic_name" {
-  description = "(optional) The name of the SNS topic used to send events to the SecurityHub Lambda"
-  default     = "grace-securityhub-topic"
-}
-
 variable "guardduty_enable" {
   description = "(optional) The boolean value of whether to enable the GuardDuty Detector"
   default     = "true"
@@ -69,4 +64,9 @@ variable "lambda_source_file" {
   type        = "string"
   description = "(optional) full or relative path to zipped binary of lambda handler"
   default     = "../release/grace-securityhub.zip"
+}
+
+variable "lambda_sns_topic_name" {
+  description = "(optional) The name of the SNS topic used to send events to the SecurityHub Lambda"
+  default     = "grace-securityhub-topic"
 }

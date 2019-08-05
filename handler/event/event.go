@@ -115,6 +115,33 @@ func (e Event) Type() Type {
 	return nil
 }
 
+// RawEvent ... is a []byte with a conversion method attached (Event)
+type RawEvent []byte
+
+// Event ... converts a RawEvent to an Event
+func (r RawEvent) Event() (Event, error) {
+	var evt Event
+	switch r[0] {
+	case '{':
+		err := json.Unmarshal(r, &evt)
+		if err != nil {
+			return nil, err
+		}
+	case '[':
+		var data []interface{}
+		err := json.Unmarshal(r, &data)
+		if err != nil {
+			return nil, err
+		}
+		evt = make(Event)
+		evt["event"] = data
+	default:
+		evt = make(Event)
+		evt["event"] = string(r)
+	}
+	return evt, nil
+}
+
 // nolint: gocyclo
 // flatten ... flattens a map[string]interface{} delimiting subsequent
 // keys with a period, arrays have their index appended to the key name

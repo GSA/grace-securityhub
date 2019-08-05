@@ -13,6 +13,7 @@ resource "aws_securityhub_product_subscription" "guardduty" {
   product_arn = "arn:aws:securityhub:${var.region}::product/aws/guardduty"
 }
 resource "aws_guardduty_detector" "guardduty" {
+  count                        = "${var.securityhub_enable_guardduty ? 1 : 0}"
   enable                       = "${var.guardduty_enable}"
   finding_publishing_frequency = "${var.guardduty_frequency}"
 }

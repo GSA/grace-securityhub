@@ -76,7 +76,6 @@ resource "aws_iam_role" "lambda" {
         "Service": "lambda.amazonaws.com"
       },
       "Effect": "Allow",
-      "Sid": ""
     }
   ]
 }

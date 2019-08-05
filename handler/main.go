@@ -6,7 +6,11 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handler(evt event.Event) error {
+func handler(raw event.RawEvent) error {
+	evt, err := raw.Event()
+	if err != nil {
+		return err
+	}
 	event.Register(
 
 		// Generic should be the final type registered as it always matches
