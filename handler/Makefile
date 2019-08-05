@@ -29,7 +29,7 @@ ifeq (,$(wildcard Gopkg.toml))
 	dep init
 endif
 
-dependencies: $(GODEP) $(GOSEC) $(GOMETALINTER)
+dependencies: $(GODEP) $(GOSEC) $(GOLANGCILINT)
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
