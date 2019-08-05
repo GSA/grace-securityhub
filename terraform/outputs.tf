@@ -3,17 +3,17 @@ output securityhub_id {
 }
 
 output securityhub_cis_id {
-  value = "${aws_securityhub_standards_subscription.cis.id}"
+  value = "${aws_securityhub_standards_subscription.cis.0.id}"
 }
 output securityhub_guardduty_arn {
-  value = "${aws_securityhub_product_subscription.guardduty.arn}"
+  value = "${aws_securityhub_product_subscription.guardduty.0.arn}"
 }
 
 output guardduty_detector_id {
-  value = "${aws_guardduty_detector.guardduty.id}"
+  value = "${aws_guardduty_detector.guardduty.0.id}"
 }
 output guardduty_detector_account_id {
-  value = "${aws_guardduty_detector.guardduty.account_id}"
+  value = "${aws_guardduty_detector.guardduty.0.account_id}"
 }
 
 output securityhub_lambda_arn {

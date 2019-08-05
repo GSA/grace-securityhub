@@ -10,7 +10,7 @@ resource "aws_securityhub_standards_subscription" "cis" {
 resource "aws_securityhub_product_subscription" "guardduty" {
   count       = "${var.securityhub_enable_guardduty ? 1 : 0}"
   depends_on  = ["aws_securityhub_account.account"]
-  product_arn = "arn:aws:securityhub:${var.region}::product/aws/guardduty"
+  product_arn = "arn:aws:securityhub:${local.region}::product/aws/guardduty"
 }
 resource "aws_guardduty_detector" "guardduty" {
   count                        = "${var.securityhub_enable_guardduty ? 1 : 0}"

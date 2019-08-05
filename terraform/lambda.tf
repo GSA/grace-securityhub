@@ -32,38 +32,32 @@ EOF
 
 resource "aws_sns_topic_subscription" "lambda" {
   topic_arn = "${aws_sns_topic.lambda.arn}"
-  protocol = "lambda"
-  endpoint = "${aws_lambda_function.lambda.arn}"
+  protocol  = "lambda"
+  endpoint  = "${aws_lambda_function.lambda.arn}"
 }
 
 resource "aws_lambda_function" "lambda" {
-  filename = "${var.lambda_source_file}"
-  function_name = "${local.app_name}"
-  description = "A Lambda for converting events to SecurityHub Findings"
-  role = "${aws_iam_role.lambda.arn}"
-  handler = "grace-securityhub"
+  filename         = "${var.lambda_source_file}"
+  function_name    = "${local.app_name}"
+  description      = "A Lambda for converting events to SecurityHub Findings"
+  role             = "${aws_iam_role.lambda.arn}"
+  handler          = "grace-securityhub"
   source_code_hash = "${filesha256(var.lambda_source_file)}"
-  kms_key_arn = "${aws_kms_key.lambda.arn}"
-  runtime = "go1.x"
-  timeout = 900
-
-  environment {
-    variables = {
-      accounts_info = "${var.accounts_info}"
-    }
-  }
+  kms_key_arn      = "${aws_kms_key.lambda.arn}"
+  runtime          = "go1.x"
+  timeout          = 900
 }
 
 resource "aws_lambda_permission" "lambda" {
-  statement_id = "AllowExecutionFromAnywhereInThisRegionAndAccount"
-  action = "lambda:InvokeFunction"
+  statement_id  = "AllowExecutionFromAnywhereInThisRegionAndAccount"
+  action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda.function_name}"
-  principal = "*"
-  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:*"
+  principal     = "*"
+  source_arn    = "arn:aws:execute-api:${local.region}:${local.account_id}:*"
 }
 
 resource "aws_iam_role" "lambda" {
-  name = "${local.app_name}"
+  name        = "${local.app_name}"
   description = "Role for GRACE Inventory Lambda function"
 
   assume_role_policy = <<EOF
@@ -75,7 +69,7 @@ resource "aws_iam_role" "lambda" {
       "Principal": {
         "Service": "lambda.amazonaws.com"
       },
-      "Effect": "Allow",
+      "Effect": "Allow"
     }
   ]
 }
@@ -119,14 +113,14 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
-  role = "${aws_iam_role.lambda.name}"
+  role       = "${aws_iam_role.lambda.name}"
   policy_arn = "${aws_iam_policy.lambda.arn}"
 }
 resource "aws_kms_key" "lambda" {
-  description = "KMS Key for encrypting the lambda at rest"
+  description             = "KMS Key for encrypting the lambda at rest"
   deletion_window_in_days = 7
-  enable_key_rotation = "true"
-  depends_on = ["aws_iam_role.lambda"]
+  enable_key_rotation     = "true"
+  depends_on              = ["aws_iam_role.lambda"]
 
   policy = <<EOF
 {
@@ -163,7 +157,7 @@ resource "aws_kms_key" "lambda" {
 EOF
 }
 
-resource "aws_kms_alias" "kms_alias" {
+resource "aws_kms_alias" "lambda" {
   name          = "alias/${local.app_name}-${local.account_id}" # Key Alias must be unique to account and region
   target_key_id = "${aws_kms_key.lambda.key_id}"
 }
