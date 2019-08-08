@@ -38,7 +38,7 @@ resource "aws_sns_topic_subscription" "lambda" {
 
 resource "aws_lambda_function" "lambda" {
   filename         = "${var.lambda_source_file}"
-  function_name    = "${local.app_name}"
+  function_name    = "${var.lambda_name}"
   description      = "A Lambda for converting events to SecurityHub Findings"
   role             = "${aws_iam_role.lambda.arn}"
   handler          = "grace-securityhub"
@@ -57,7 +57,7 @@ resource "aws_lambda_permission" "lambda" {
 }
 
 resource "aws_iam_role" "lambda" {
-  name        = "${local.app_name}"
+  name        = "${var.lambda_iam_role_name}"
   description = "Role for GRACE Inventory Lambda function"
 
   assume_role_policy = <<EOF
@@ -77,7 +77,7 @@ EOF
 }
 
 resource "aws_iam_policy" "lambda" {
-  name        = "${local.app_name}"
+  name        = "${var.lambda_iam_policy_name}"
   description = "Policy to allow creating new SecurityHub findings"
 
   policy = <<EOF
@@ -158,6 +158,6 @@ EOF
 }
 
 resource "aws_kms_alias" "lambda" {
-  name          = "alias/${local.app_name}-${local.account_id}" # Key Alias must be unique to account and region
+  name          = "alias/${var.lambda_kms_key_alias_prefix}-${local.account_id}" # Key Alias must be unique to account and region
   target_key_id = "${aws_kms_key.lambda.key_id}"
 }

@@ -1,4 +1,3 @@
-data "aws_region" "current" {}
 resource "aws_securityhub_account" "account" {}
 
 resource "aws_securityhub_standards_subscription" "cis" {

@@ -60,9 +60,29 @@ variable "config_recorder_group_include_global" {
   description = "(optional) Specifies whether AWS Config includes all supported types of global resources with the resources that it records."
   default     = "true"
 }
+
+variable "lambda_name" {
+  description = "(optional) The name given to the Lambda function"
+  default     = "grace-securityhub"
+}
+
+variable "lambda_iam_role_name" {
+  description = "(optional) The name given to the Lambda IAM Role"
+  default     = "grace-securityhub"
+}
+variable "lambda_iam_policy_name" {
+  description = "(optional) The name given to the Lambda IAM Policy"
+  default     = "grace-securityhub"
+}
+
+variable "lambda_kms_key_alias_prefix" {
+  description = "(optional) The prefix used in the KMS Key Alias, the suffix is the current account ID"
+  default     = "grace-securityhub"
+}
+
 variable "lambda_source_file" {
   type        = "string"
-  description = "(optional) full or relative path to zipped binary of lambda handler"
+  description = "(optional) The full or relative path to zipped binary of lambda handler"
   default     = "../release/grace-securityhub.zip"
 }
 
