@@ -53,7 +53,7 @@ resource "aws_config_delivery_channel" "config" {
 
 resource "aws_config_configuration_recorder_status" "config" {
   count = "${var.config_recorder_enable ? 1 : 0}"
-  name  = "${aws_config_configuration_recorder.0.config.name}"
+  name  = "${aws_config_configuration_recorder.config.0.name}"
 
   is_enabled = "${var.config_recorder_enabled}"
 
