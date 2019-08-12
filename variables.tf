@@ -1,3 +1,7 @@
+variable "securityhub_enable" {
+  description = "(optional) The boolean value of whether to enable SecurityHub for the current account"
+  default     = "true"
+}
 
 variable "securityhub_enable_cis_benchmark" {
   description = "(optional) The boolean value of whether to enable the CIS Benchmark ruleset"

@@ -1,5 +1,5 @@
 output "securityhub_id" {
-  value = "${aws_securityhub_account.account.id}"
+  value = "${aws_securityhub_account.account.0.id}"
 }
 
 output "securityhub_cis_id" {
