@@ -49,11 +49,11 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_lambda_permission" "lambda" {
-  statement_id  = "AllowExecutionFromAnywhereInThisRegionAndAccount"
+  statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda.function_name}"
-  principal     = "*"
-  source_arn    = "arn:aws:execute-api:${local.region}:${local.account_id}:*"
+  principal     = "sns.amazonaws.com"
+  source_arn    = "${aws_sns_topic.lambda.arn}"
 }
 
 resource "aws_iam_role" "lambda" {
@@ -105,7 +105,9 @@ resource "aws_iam_policy" "lambda" {
       "Action": [
         "kms:Encrypt"
       ],
-      "Resource": "${aws_kms_key.lambda.arn}"
+      "Resource": [
+        "${aws_kms_key.lambda.arn}"
+      ]
     }
   ]
 }
