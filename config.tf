@@ -29,6 +29,7 @@ resource "aws_iam_role_policy_attachment" "organization" {
 }
 
 resource "aws_config_configuration_recorder" "config" {
+  count    = "${var.config_recorder_enable ? 1 : 0}"
   name     = "${var.config_recorder_name}"
   role_arn = "${aws_iam_role.config.arn}"
   recording_group {
@@ -38,6 +39,7 @@ resource "aws_config_configuration_recorder" "config" {
 }
 
 resource "aws_config_delivery_channel" "config" {
+  count          = "${var.config_recorder_enable ? 1 : 0}"
   name           = "${var.config_delivery_name}"
   s3_bucket_name = "${var.config_delivery_bucket}"
   s3_key_prefix  = "${var.config_delivery_bucket_prefix}"
@@ -50,7 +52,8 @@ resource "aws_config_delivery_channel" "config" {
 }
 
 resource "aws_config_configuration_recorder_status" "config" {
-  name = "${aws_config_configuration_recorder.config.name}"
+  count = "${var.config_recorder_enable ? 1 : 0}"
+  name  = "${aws_config_configuration_recorder.0.config.name}"
 
   is_enabled = "${var.config_recorder_enabled}"
 

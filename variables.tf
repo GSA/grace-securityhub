@@ -28,6 +28,11 @@ variable "config_role_name" {
   default     = "grace-config-service"
 }
 
+variable "config_recorder_enable" {
+  description = "(optional) The boolean value indicating whether or not to deploy the AWS Config Recorder and its configuration"
+  default     = "true"
+}
+
 variable "config_recorder_name" {
   description = "(optional) The name given to the AWS Config Recorder"
   default     = "grace-config-service"
