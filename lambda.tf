@@ -61,7 +61,7 @@ resource "aws_lambda_permission" "cloudwatch" {
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda.function_name}"
   principal     = "events.amazonaws.com"
-  source_arn    = "arn:aws:events:*:${local.account_id}:*"
+  source_arn    = "arn:aws:events::${local.account_id}:*"
 }
 
 resource "aws_iam_role" "lambda" {
