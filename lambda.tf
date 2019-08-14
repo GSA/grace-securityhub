@@ -56,17 +56,9 @@ resource "aws_lambda_permission" "sns" {
   source_arn    = "${aws_sns_topic.lambda.arn}"
 }
 
-resource "aws_lambda_permission" "cloudwatch" {
-  statement_id  = "AllowExecutionFromCloudWatch"
-  action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.lambda.function_name}"
-  principal     = "events.amazonaws.com"
-  source_arn    = "arn:aws:events::${local.account_id}:*"
-}
-
 resource "aws_iam_role" "lambda" {
   name        = "${var.lambda_iam_role_name}"
-  description = "Role for GRACE SecurityHub Lambda function"
+  description = "Role for GRACE Inventory Lambda function"
 
   assume_role_policy = <<EOF
 {
@@ -94,50 +86,31 @@ resource "aws_iam_policy" "lambda" {
   "Statement": [
     {
       "Action": [
-        "securityhub:BatchImportFindings"
+        "securityhub:BatchImportFindings",
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
       ],
       "Effect": "Allow",
       "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role" "invoker" {
-  name        = "${var.lambda_invoker_iam_role_name}"
-  description = "Role for Invoking GRACE SecurityHub Lambda function"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "events.amazonaws.com"
-      },
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_policy" "invoker" {
-  name        = "${var.lambda_invoker_iam_policy_name}"
-  description = "Policy to allow invoking the SecurityHub Lambda"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
+    },
     {
       "Action": [
-        "lambda:Invoke"
+        "sts:AssumeRole"
       ],
       "Effect": "Allow",
-      "Resource": "${aws_lambda_function.lambda.arn}"
+      "Resource": [
+        "${aws_iam_role.lambda.arn}"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt"
+      ],
+      "Resource": [
+        "${aws_kms_key.lambda.arn}"
+      ]
     }
   ]
 }
@@ -148,6 +121,7 @@ resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
   role       = "${aws_iam_role.lambda.name}"
   policy_arn = "${aws_iam_policy.lambda.arn}"
 }
+
 resource "aws_kms_key" "lambda" {
   description             = "KMS Key for encrypting the lambda at rest"
   deletion_window_in_days = 7
