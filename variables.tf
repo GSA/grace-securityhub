@@ -84,6 +84,15 @@ variable "lambda_iam_policy_name" {
   default     = "grace-securityhub"
 }
 
+variable "lambda_invoker_iam_role_name" {
+  description = "(optional) The name given to the Lambda Invoker IAM Role"
+  default     = "grace-securityhub-invoker"
+}
+variable "lambda_invoker_iam_policy_name" {
+  description = "(optional) The name given to the Lambda Invoker IAM Policy"
+  default     = "grace-securityhub-invoker"
+}
+
 variable "lambda_kms_key_alias_prefix" {
   description = "(optional) The prefix used in the KMS Key Alias, the suffix is the current account ID"
   default     = "grace-securityhub"
