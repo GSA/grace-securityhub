@@ -66,7 +66,7 @@ resource "aws_lambda_permission" "cloudwatch_logs" {
 
 resource "aws_iam_role" "lambda" {
   name        = "${var.lambda_iam_role_name}"
-  description = "Role for GRACE Inventory Lambda function"
+  description = "Role for GRACE SecurityHub Lambda function"
 
   assume_role_policy = <<EOF
 {
