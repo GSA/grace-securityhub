@@ -28,11 +28,6 @@ output "securityhub_lambda_kms_key_id" {
 output "securityhub_lambda_role_arn" {
   value = "${aws_iam_role.lambda.arn}"
 }
-
-output "securityhub_lambda_invoker_role_arn" {
-  value = "${aws_iam_role.invoker.arn}"
-}
-
 output "securityhub_lambda_role_id" {
   value = "${aws_iam_role.lambda.id}"
 }
