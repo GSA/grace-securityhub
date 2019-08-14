@@ -57,7 +57,7 @@ resource "aws_lambda_permission" "sns" {
 }
 
 resource "aws_lambda_permission" "cloudwatch_logs" {
-  statement_id  = "AllowExecutionFromSNS"
+  statement_id  = "AllowInvocationFromCloudWatchLogs"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda.function_name}"
   principal     = "logs.${local.region}.amazonaws.com"
