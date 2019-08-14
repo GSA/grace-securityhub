@@ -56,6 +56,14 @@ resource "aws_lambda_permission" "sns" {
   source_arn    = "${aws_sns_topic.lambda.arn}"
 }
 
+resource "aws_lambda_permission" "cloudwatch_logs" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.lambda.function_name}"
+  principal     = "logs.${local.region}.amazonaws.com"
+  source_arn    = "arn:aws:logs:${local.region}:${local.account_id}:*"
+}
+
 resource "aws_iam_role" "lambda" {
   name        = "${var.lambda_iam_role_name}"
   description = "Role for GRACE Inventory Lambda function"
