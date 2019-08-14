@@ -48,12 +48,20 @@ resource "aws_lambda_function" "lambda" {
   timeout          = 900
 }
 
-resource "aws_lambda_permission" "lambda" {
+resource "aws_lambda_permission" "sns" {
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda.function_name}"
   principal     = "sns.amazonaws.com"
   source_arn    = "${aws_sns_topic.lambda.arn}"
+}
+
+resource "aws_lambda_permission" "cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.lambda.function_name}"
+  principal     = "events.amazonaws.com"
+  source_arn    = "arn:aws:events:*:${local.account_id}:*"
 }
 
 resource "aws_iam_role" "lambda" {
