@@ -58,7 +58,7 @@ resource "aws_lambda_permission" "lambda" {
 
 resource "aws_iam_role" "lambda" {
   name        = "${var.lambda_iam_role_name}"
-  description = "Role for GRACE Inventory Lambda function"
+  description = "Role for GRACE SecurityHub Lambda function"
 
   assume_role_policy = <<EOF
 {
@@ -67,7 +67,7 @@ resource "aws_iam_role" "lambda" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "lambda.amazonaws.com"
+        "Service": ""
       },
       "Effect": "Allow"
     }
@@ -90,24 +90,46 @@ resource "aws_iam_policy" "lambda" {
       ],
       "Effect": "Allow",
       "Resource": "*"
-    },
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role" "invoker" {
+  name        = "${var.lambda_invoker_iam_role_name}"
+  description = "Role for Invoking GRACE SecurityHub Lambda function"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "events.amazonaws.com"
+      },
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_policy" "invoker" {
+  name        = "${var.lambda_invoker_iam_policy_name}"
+  description = "Policy to allow invoking the SecurityHub Lambda"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
     {
       "Action": [
-        "sts:AssumeRole"
+        "lambda:Invoke"
       ],
       "Effect": "Allow",
-      "Resource": [
-        "${aws_iam_role.lambda.arn}"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "kms:Encrypt"
-      ],
-      "Resource": [
-        "${aws_kms_key.lambda.arn}"
-      ]
+      "Resource": "${aws_lambda_function.lambda.arn}"
     }
   ]
 }
