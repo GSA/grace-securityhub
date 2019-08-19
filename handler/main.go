@@ -1,15 +1,20 @@
 package main
 
 import (
+	"context"
+
 	"github.com/GSA/grace-securityhub/handler/event"
 	"github.com/GSA/grace-securityhub/handler/types"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handler(raw event.RawEvent) error {
-	evt, err := raw.Event()
+type lambdaFunction struct{}
+
+// Invoke ... starts the lambda invocation
+func (l lambdaFunction) Invoke(ctx context.Context, data []byte) ([]byte, error) {
+	evt, err := event.RawEvent(data).Event()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	event.Register(
 
@@ -18,15 +23,15 @@ func handler(raw event.RawEvent) error {
 	)
 	p, err := event.New()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = p.Publish(evt)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return []byte{}, nil
 }
 
 func main() {
-	lambda.Start(handler)
+	lambda.StartHandler(lambdaFunction{})
 }
