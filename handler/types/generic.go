@@ -44,9 +44,9 @@ const schemaVersion = "0.0.1"
 func (g *Generic) Finding(evt event.Event) *securityhub.AwsSecurityFinding {
 	e := evt.Flatten()
 	return &securityhub.AwsSecurityFinding{
-		AwsAccountId: evt["recipientAccountId"].(*string),
-		CreatedAt:    evt["eventTime"].(*string),
-		UpdatedAt:    evt["eventTime"].(*string),
+		AwsAccountId: stringifyValue(evt["recipientAccountId"]),
+		CreatedAt:    stringifyValue(evt["eventTime"]),
+		UpdatedAt:    stringifyValue(evt["eventTime"]),
 		Title:        aws.String("Generic Finding"),
 		Description:  aws.String("Generic Finding"),
 		GeneratorId:  aws.String("Generic Finding Rule"),
@@ -88,4 +88,19 @@ func stringify(m map[string]interface{}) map[string]*string {
 		}
 	}
 	return o
+}
+
+func stringifyValue(v interface{}) *string {
+	switch obj := v.(type) {
+	case int:
+		return aws.String(strconv.Itoa(obj))
+	case float64:
+		return aws.String(strconv.FormatFloat(obj, 'f', -1, 64))
+	case string:
+		return aws.String(obj)
+	case nil:
+		return aws.String("")
+	default:
+		return aws.String(fmt.Sprintf("%v", obj))
+	}
 }
