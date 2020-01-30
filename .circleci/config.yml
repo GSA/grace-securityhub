@@ -25,7 +25,7 @@ jobs:
             - ./release/*
   validate:
     environment:
-        AWS_DEFAULT_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
     docker:
       - image: hashicorp/terraform:0.12.6
     steps:
@@ -60,11 +60,11 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Install tfsec
-        command: env GO111MODULE=on go get -u github.com/liamg/tfsec/cmd/tfsec
+          name: Install tfsec
+          command: env GO111MODULE=on go get -u github.com/liamg/tfsec/cmd/tfsec
       - run:
-        name: Terraform static code analysis with tfsec
-        command: tfsec
+          name: Terraform static code analysis with tfsec
+          command: tfsec
 
 workflows:
   version: 2
