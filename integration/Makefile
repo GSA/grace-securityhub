@@ -1,9 +1,7 @@
 GOOS = linux
 GOARCH = amd64
 GOBIN := $(GOPATH)/bin
-GODEP := $(GOBIN)/dep
 GOLANGCILINT := $(GOBIN)/golangci-lint
-GOSEC := $(GOBIN)/gosec
 RELEASEDIR ?= ../release/
 CIRCLE_PROJECT_REPONAME ?= grace-securityhub
 REPO_PATH := github.com/GSA/$(CIRCLE_PROJECT_REPONAME)/integration
@@ -31,23 +29,16 @@ test: lint
 clean:
 	rm -f $(RELEASEDIR)$(BINARY).zip
 
-lint: dependencies Gopkg.toml
-	dep ensure
+lint: dependencies
 	golangci-lint run ./...
-	gosec ./...
 
-Gopkg.toml: $(GODEP)
-ifeq (,$(wildcard Gopkg.toml))
-	dep init
-endif
-
-dependencies: $(GODEP) $(GOLANGCILINT) $(GOSEC)
+dependencies: $(GOLANGCILINT) go.sum
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
-$(GODEP):
-	go get -u github.com/golang/dep/cmd/dep
+go.sum: go.mod
+	go mod tidy
 
-$(GOSEC):
-	go get -u github.com/securego/gosec/cmd/gosec
+go.mod:
+	go mod init

@@ -32,7 +32,7 @@ jobs:
       - checkout
       - run:
           name: Install curl
-          command: apk add --update curl
+          command: apk add curl && apk upgrade
       - run:
           name: create release directory if it doesn't exist
           command: if [[! -d ../release ]]; then mkdir ../release; fi
