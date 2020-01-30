@@ -15,6 +15,9 @@ run:
   # include test files or not, default is true
   tests: true
 
+  # include integration tests
+  build-tags:
+    - integration
 
 # output configuration options
 output:
@@ -44,18 +47,6 @@ linters-settings:
     # see https://github.com/kisielk/errcheck#the-deprecated-method for details
     ignore: fmt:.*,io/ioutil:^Read.*
 
-  govet:
-    # report about shadowed variables
-    check-shadowing: true
-
-    # settings per analyzer
-    settings:
-      printf: # analyzer name, run `go tool vet help` to see all analyzers
-        funcs: # run `go tool vet help printf` to see available settings for `printf` analyzer
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
-          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
   golint:
     # minimal confidence for issues, default is 0.8
     min-confidence: 0.0
@@ -76,8 +67,6 @@ linters-settings:
   depguard:
     list-type: blacklist
     include-go-root: false
-    packages:
-      - github.com/davecgh/go-spew/spew
   misspell:
     # Correct spellings using locale preferences for US or UK.
     # Default is to use a neutral variety of English.
@@ -119,11 +108,10 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-    - dupl
-    - prealloc
     - gochecknoinits
     - gochecknoglobals
     - wsl
+    - prealloc
     - gomnd
   fast: false
 

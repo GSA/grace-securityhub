@@ -1,6 +1,4 @@
 GOBIN := $(GOPATH)/bin
-GODEP := $(GOBIN)/dep
-GOSEC := $(GOBIN)/gosec
 GOLANGCILINT := $(GOBIN)/golangci-lint
 RELEASEDIR ?= ../release/
 CIRCLE_PROJECT_REPONAME ?= grace-securityhub
@@ -19,23 +17,16 @@ clean:
 test: lint
 	go test -v ./...
 
-lint: Gopkg.toml dependencies
-	dep ensure
+lint: dependencies
 	golangci-lint run ./...
-	gosec ./...
 
-Gopkg.toml:
-ifeq (,$(wildcard Gopkg.toml))
-	dep init
-endif
-
-dependencies: $(GODEP) $(GOSEC) $(GOLANGCILINT)
+dependencies: $(GOLANGCILINT) go.sum
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
-$(GODEP):
-	go get -u github.com/golang/dep/cmd/dep
+go.sum: go.mod
+	go mod tidy
 
-$(GOSEC):
-	go get -u github.com/securego/gosec/cmd/gosec
+go.mod:
+	go mod init
