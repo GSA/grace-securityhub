@@ -10,7 +10,7 @@ appenv ?= development
 APP_NAME = securityhub
 BINARY := $(CIRCLE_PROJECT_REPONAME)-integration
 
-.PHONY: check release lint test clean dependencies
+.PHONY: precommit check release lint test clean dependencies
 check:
 ifeq ($(strip $(TF_VAR_regions)),)
 	@echo "TF_VAR_regions must be provided"
@@ -26,13 +26,13 @@ release: lint
 test: lint
 	go test -v -ldflags="-X $(APP_PATH).name=$(APP_NAME) -X $(APP_PATH).env=$(appenv) -X $(REPO_PATH).tenantRole=$(tenant_role) -X $(REPO_PATH).masterRole=$(master_role) -X $(REPO_PATH).regions=$(TF_VAR_regions)"
 
-clean:
+clean: dependencies
 	rm -f $(RELEASEDIR)$(BINARY).zip
 
 lint: dependencies
 	golangci-lint run ./...
 
-dependencies: $(GOLANGCILINT) go.sum
+dependencies: $(GOLANGCILINT) go.sum precommit
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
@@ -42,3 +42,8 @@ go.sum: go.mod
 
 go.mod:
 	go mod init
+
+precommit:
+ifneq ($(strip $(hooksPath)),.github/hooks)
+	@git config --add core.hooksPath .github/hooks
+endif
