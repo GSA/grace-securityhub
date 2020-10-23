@@ -1,24 +1,14 @@
 jobs:
-  test_lambda:
-    docker:
-      - image: circleci/golang:latest
-    working_directory: /go/src/github.com/GSA/grace-securityhub
-    steps:
-      - checkout
-      - run:
-          name: Run Tests
-          command: |
-            pwd && make -C handler test
   release_lambda:
     docker:
-      - image: circleci/golang:latest
-    working_directory: /go/src/github.com/GSA/grace-securityhub
+      - image: circleci/python:3.7
+    working_directory: /python/src/github.com/GSA/grace-securityhub
     steps:
       - checkout
       - run:
-          name: Build executable
+          name: Build Python Zip
           command: |
-            pwd && make -C handler release
+            pip install -r requirements.txt  && zip -j grace-sechub-lambda.zip grace-inventory-lambda
       - persist_to_workspace:
           root: .
           paths:
@@ -74,5 +64,3 @@ workflows:
       - tfsec
       - test_lambda
       - release_lambda:
-          requires:
-            - test_lambda
