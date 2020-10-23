@@ -63,4 +63,4 @@ workflows:
       - validate
       - tfsec
       - test_lambda
-      - release_lambda:
+      - release_lambda
