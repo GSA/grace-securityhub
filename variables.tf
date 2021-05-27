@@ -90,7 +90,7 @@ variable "lambda_kms_key_alias_prefix" {
 }
 
 variable "lambda_source_file" {
-  type        = "string"
+  type        = string
   description = "(optional) The full or relative path to zipped binary of lambda handler"
   default     = "../release/grace-securityhub.zip"
 }
