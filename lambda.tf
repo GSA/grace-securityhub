@@ -1,4 +1,5 @@
 
+#tfsec:ignore:AWS016
 resource "aws_sns_topic" "lambda" {
   name = var.lambda_sns_topic_name
 }
