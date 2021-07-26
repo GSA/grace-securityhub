@@ -135,7 +135,7 @@ resource "aws_kms_key" "lambda" {
   description             = "KMS Key for encrypting the lambda at rest"
   deletion_window_in_days = 7
   enable_key_rotation     = "true"
-  depends_on              = ["aws_iam_role.lambda"]
+  depends_on              = [aws_iam_role.lambda]
 
   policy = <<EOF
 {
